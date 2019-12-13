@@ -309,7 +309,7 @@ function videoStudy()
         console.log("即将观看第"+(i+1)+"个小视频");
         video_timing(i,vTime);//观看每个小视频
         if(i!=vCount-1){
-            swipe(x,h1,x,h2,500);//往下滑
+            swipe(x,h1,x,h2,1000);//往下滑
         }
     }
     back();
