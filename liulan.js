@@ -196,91 +196,103 @@ function articleStudy()
     var listView=className("ListView");//获取文章ListView控件用于翻页
     click("推荐");
     delay(2);
-    var flag=false;//判断进入专题界面标志
     var fail=0;
-    var s=getTodayDateString();//获取当天日期字符串
 
-    for(var i=0,t=0;i<aCount;)
-    {
-        if(click(s,t)==true)//如果点击成功则进入文章页面,不成功意味着本页已经到底,要翻页
-        {   
-            delay(1.5);
-            if(desc("简介").exists())//如果存在“简介”则认为进入了文章栏中的视频界面需退出
-            {
-                delay(1);
-                console.warn("进入了视频界面，即将退出并进下一篇文章!");
-                t++;
-                back();
-                delay(1.5);
-                click("电台");
-                delay(1.5);
-                click("中国之声");
-                console.log("因为广播被打断，正在重新收听广播...");
-                delay(2);
-                back();
-                while(!desc("学习").exists());
-                desc("学习").click();
-                delay(1.5);
-                continue;
+    var dateStrToday = getTodayDateString();
+    var dateStrYesterday = getYestardayDateString();
+    var fromToday = true;
+
+    for (var i = 0, t = 0; i < aCount;) {
+        if (fromToday) {
+            if (click(dateStrToday, t) == true) {
+                if (articleCheck(i)) {
+                    i++;
+                }           
             }
-            var n=0;
-            while(!textContains("欢迎发表你的观点").exists())//如果没有找到评论框则认为没有进入文章界面，一直等待
-            {
-                delay(1);
-                n++;
-                console.warn("没找到评论框!该界面非文章界面!");
-                if(n>4)//等待超过5秒则认为进入了专题界面，退出进下一篇文章
-                {
-                    flag=true;
+            t++; 
+            // 如果连续6次浏览今日文章失败，则换策略，开始浏览昨日文章
+            if (t > 6) {
+                fromToday = false;
+                t = 0;
+            } 
+        } else {
+            if (click(dateStrYesterday, t) == true) {
+                if (articleCheck(i)) {
+                    i++;
+                }
+            } 
+            t++;
+            // 如果连续6次浏览昨日文章失败，则换策略，翻页后重新浏览今日文章
+            if (t > 6) {
+                if (fail > 10) {
+                    console.warn("连翻10页，实在找不到今日与昨日文章！不干了！");
                     break;
                 }
-            }
-            if(flag==true)
-            {
-                console.warn("进入了专题界面，即将退出并进下一篇文章!")
-                t++;
-                back();
+
+                fromToday = true;
+                listView.scrollForward();//向下滑动(翻页)
+                fail++;//翻页次数加一
                 delay(2);
-                flag=false;
-                continue;
-            }
-            console.log("正在学习第"+(i+1)+"篇文章...");
-            fail=0;
-            var wave=random(-5,5);//上下随机波动5秒
-            article_timing(i,aTime+wave);
-            if(i<cCount)//收藏分享2篇文章
-            {
-                CollectAndShare(i);//收藏+分享。若运行到此报错请注释本行！
-                comment(i);//评论
-            }
-            back();//返回主界面
-            while(!desc("学习").exists());//等待加载出主页
-            delay(2);
-            i++;
-            t++;//t为实际点击的文章在listView控件中的标号,和i不同,勿改动!
-        }
-        else
-        {
-            if(i==0)
-            {
-                s=getYestardayDateString();
-                console.warn("首页没有找到当天文章，即将学习昨日新闻!");
-                continue;
-            }
-            if(fail>3)//连续翻几页没有点击成功则认为今天的新闻还没出来，学习昨天的
-            {
-                s=getYestardayDateString();
-                delay(1);
-                console.warn("没有找到当天文章，即将学习昨日新闻!");
                 t=0;
-                continue;
             }
-            listView.scrollForward();//向下滑动(翻页)
-            fail++;//翻页次数加一
-            delay(2);
-            t=1;
         }
     }
+}
+
+function articleCheck(articleCntIdx) {
+    var flag = false;
+    delay(1.5);
+    if(desc("简介").exists())//如果存在“简介”则认为进入了文章栏中的视频界面需退出
+    {
+        delay(1);
+        console.warn("进入了视频界面，即将退出并进下一篇文章!");
+        back();
+        delay(1.5);
+        click("电台");
+        delay(1.5);
+        click("中国之声");
+        console.log("因为广播被打断，正在重新收听广播...");
+        delay(2);
+        back();
+        while(!desc("学习").exists());
+        desc("学习").click();
+        delay(1.5);
+        return false;
+    }
+
+    var n=0;
+    while(!textContains("欢迎发表你的观点").exists())//如果没有找到评论框则认为没有进入文章界面，一直等待
+    {
+        delay(1);
+        n++;
+        console.warn("没找到评论框!该界面非文章界面!");
+        if(n>4)//等待超过5秒则认为进入了专题界面，退出进下一篇文章
+        {
+            flag=true;
+            break;
+        }
+    }
+    if(flag==true)
+    {
+        console.warn("进入了专题界面，即将退出并进下一篇文章!")
+        back();
+        delay(2);
+        return false;
+    }
+
+    console.log("正在学习第"+(articleCntIdx+1)+"篇文章...");
+    var wave=random(-5,5);//上下随机波动5秒
+    article_timing(articleCntIdx,aTime+wave);
+    if(articleCntIdx<cCount)//收藏分享2篇文章
+    {
+        CollectAndShare(articleCntIdx);//收藏+分享。若运行到此报错请注释本行！
+        comment(articleCntIdx);//评论
+    }
+    back();//返回主界面
+    while(!desc("学习").exists());//等待加载出主页
+    delay(2);
+    
+    return true;
 }
 
 /**
@@ -309,7 +321,7 @@ function videoStudy()
         console.log("即将观看第"+(i+1)+"个小视频");
         video_timing(i,vTime);//观看每个小视频
         if(i!=vCount-1){
-            swipe(x,h1,x,h2,1000);//往下滑
+            swipe(x,h1,x,h2,500);//往下滑
         }
     }
     back();
@@ -343,11 +355,11 @@ function CollectAndShare(i)
 {
     console.log("正在进行第"+(i+1)+"次收藏和分享...");
 
-    var collectIcon = classNameContains("ImageView").depth(10).findOnce(0);//右下角收藏按钮
+    var collectIcon = classNameContains("ImageView").depth(11).findOnce(0);//右下角收藏按钮
     collectIcon.click();//点击收藏
     delay(2);
     console.info("收藏成功!");
-    var shareIcon = classNameContains("ImageView").depth(10).findOnce(1);//右下角分享按钮
+    var shareIcon = classNameContains("ImageView").depth(11).findOnce(1);//右下角分享按钮
     shareIcon.click();//点击分享
 
     while(!textContains("分享到学习强").exists());//等待弹出分享选项界面
@@ -412,4 +424,22 @@ function begin()
     console.log("运行结束,共耗时"+(parseInt(end-start))/1000+"秒");
 }
 
-module.exports=begin;
+// 只开始浏览文章
+function beginOnlyArticlesStudy() {
+    console.show();//部分华为手机console有bug请注释本行
+    console.setPosition(0,device.height/4);
+    console.log("学习强国助手启动中...");
+    while(!desc("学习").exists()){
+        console.log("正在等待加载出主页...");
+        delay(1);
+    }
+    delay(2);
+    var start=new Date().getTime();//程序开始时间
+    articleStudy();//学习文章，包含点赞分享和评论
+    var end=new Date().getTime();
+
+    console.log("运行结束,共耗时"+(parseInt(end-start))/1000+"秒");
+}
+
+exports.begin=begin;
+exports.beginOnlyArticlesStudy=beginOnlyArticlesStudy;
