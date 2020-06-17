@@ -120,7 +120,7 @@ function tiaoZhan() {
     let failDo = false;
     //提取题目
     if (className("android.widget.ListView").exists()) {
-        var _timu = className("android.widget.ListView").findOnce().parent().child(0).desc();
+        var _timu = className("android.widget.ListView").findOnce().parent().child(0).text();
     } else {
         //back();
         toastLog("提取题目失败");
@@ -140,7 +140,7 @@ function tiaoZhan() {
     var ansTimu = [];
     if (className("android.widget.ListView").exists()) {
         className("android.widget.ListView").findOne().children().forEach(child => {
-            var answer_q = child.child(0).child(1).desc();
+            var answer_q = child.child(0).child(1).text();
             ansTimu.push(answer_q);
         });
     } else {
@@ -194,13 +194,13 @@ function tiaoZhan() {
     }
     //开始点击
 
-    if (className("android.view.View").desc(answer).exists()) {
+    if (className("android.view.View").text(answer).exists()) {
         //RadioButton位置
-        var b = className("android.view.View").desc(answer).findOnce().parent().child(0).bounds();
+        var b = className("android.view.View").text(answer).findOnce().parent().child(0).bounds();
         var tipsWindow = drawfloaty(b.centerX(), b.centerY());
         sleep(300);
         //点击RadioButton
-        className("android.view.View").desc(answer).findOnce().parent().child(0).click();
+        className("android.view.View").text(answer).findOnce().parent().child(0).click();
         sleep(300);
         //floaty.closeAll();
         tipsWindow.close();
@@ -214,7 +214,7 @@ function tiaoZhan() {
 
     sleep(1000);
     //写库
-    if (!className("android.view.View").descContains("本次答对").exists()) {//如果答对
+    if (!className("android.view.View").textContains("本次答对").exists()) {//如果答对
         if (ansTiku == "") {
             var sqlstr = "INSERT INTO tiku VALUES ('" + _timu + "','" + answer + "','')";
             insertOrUpdate(sqlstr);
@@ -233,13 +233,13 @@ function tiaoZhan() {
 function begin() {
     while (true) {
         //floaty.closeAll();
-        if (className("android.view.View").descContains("本次答对").exists()) {
+        if (className("android.view.View").textContains("本次答对").exists()) {
             beep();
             //break;
             //back();
         }
-        if (className("android.view.View").desc("挑战答题").exists()) {
-            className("android.view.View").desc("挑战答题").click();
+        if (className("android.view.View").text("挑战答题").exists()) {
+            className("android.view.View").text("挑战答题").click();
             sleep(3000);
         }
         tiaoZhan();
