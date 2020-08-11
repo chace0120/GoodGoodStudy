@@ -355,11 +355,11 @@ function CollectAndShare(i)
 {
     console.log("正在进行第"+(i+1)+"次收藏和分享...");
 
-    var collectIcon = classNameContains("ImageView").depth(11).findOnce(0);//右下角收藏按钮
+    var collectIcon = classNameContains("ImageView").depth(10).findOnce(0);//右下角收藏按钮
     collectIcon.click();//点击收藏
     delay(2);
     console.info("收藏成功!");
-    var shareIcon = classNameContains("ImageView").depth(11).findOnce(1);//右下角分享按钮
+    var shareIcon = classNameContains("ImageView").depth(10).findOnce(1);//右下角分享按钮
     shareIcon.click();//点击分享
 
     while(!textContains("分享到学习强").exists());//等待弹出分享选项界面
