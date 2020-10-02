@@ -92,7 +92,7 @@ function radio_timing(r_time,seconds)
 {
     for(var i=0;i<seconds;i++)
     {
-        while(!desc("学习").exists())//如果离开了强国主页
+        while(!id("home_bottom_tab_icon_large").exists())//如果离开了强国主页
         {
             console.error("当前已离开主页，请返回并确保电台仍在播放...");
             delay(1);
@@ -190,8 +190,8 @@ function getYestardayDateString()
  */
 function articleStudy()
 {
-    while(!desc("学习").exists());//等待加载出主页
-    desc("学习").click();//点击主页正下方的"学习"按钮
+    while(!id("home_bottom_tab_icon_large").exists());//等待加载出主页
+    id("home_bottom_tab_icon_large").click();//点击主页正下方的"学习"按钮
     delay(2);
     var listView=className("ListView");//获取文章ListView控件用于翻页
     click("推荐");
@@ -254,8 +254,8 @@ function articleCheck(articleCntIdx) {
         console.log("因为广播被打断，正在重新收听广播...");
         delay(2);
         back();
-        while(!desc("学习").exists());
-        desc("学习").click();
+        while(!id("home_bottom_tab_icon_large").exists());
+        id("home_bottom_tab_icon_large").click();
         delay(1.5);
         return false;
     }
@@ -289,7 +289,7 @@ function articleCheck(articleCntIdx) {
         comment(articleCntIdx);//评论
     }
     back();//返回主界面
-    while(!desc("学习").exists());//等待加载出主页
+    while(!id("home_bottom_tab_icon_large").exists());//等待加载出主页
     delay(2);
     
     return true;
@@ -405,7 +405,7 @@ function begin()
     // {
     //     console.error("找不到学习强国App!");
     // }
-    while(!desc("学习").exists()){
+    while(!id("home_bottom_tab_icon_large").exists()){
         console.log("正在等待加载出主页...");
         delay(1);
     }
@@ -429,7 +429,7 @@ function beginOnlyArticlesStudy() {
     console.show();//部分华为手机console有bug请注释本行
     console.setPosition(0,device.height/4);
     console.log("学习强国助手启动中...");
-    while(!desc("学习").exists()){
+    while(!id("home_bottom_tab_icon_large").exists()){
         console.log("正在等待加载出主页...");
         delay(1);
     }
