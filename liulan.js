@@ -337,7 +337,7 @@ function listenToRadio()
 {
     click("电台");
     delay(2);
-    click("听新闻广播");
+    click("听广播");
     delay(2);
     click("中国之声");
     console.log("正在收听“中国之声”广播...");
